@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Radhe Mart - Admin Dashboard</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div class="admin-dashboard">
+        <!-- Admin Header -->
+        <header class="admin-header">
+            <div class="container">
+                <div class="admin-logo">
+                    <h1><i class="fas fa-shield-alt"></i> Radhe Mart Admin</h1>
+                </div>
+                <div class="admin-actions">
+                    <button class="sync-btn" id="manualSyncBtn">
+                        <i class="fas fa-sync-alt"></i> Sync Data
+                    </button>
+                    <button class="backup-btn" id="downloadBackupBtn">
+                        <i class="fas fa-download"></i> Download Backup
+                    </button>
+                    <button class="debug-btn" id="debugRefreshBtn" style="background: #e74c3c;">
+                        <i class="fas fa-bug"></i> Debug Refresh
+                    </button>
+                    <button class="logout-btn" id="logoutBtn">
+                        <i class="fas fa-sign-out-alt"></i> Logout
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Admin Content -->
+        <main class="admin-content">
+            <div class="container">
+                <!-- Stats Cards -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-shopping-cart"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="totalOrders">0</h3>
+                            <p>Total Orders</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-rupee-sign"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>₹<span id="totalRevenue">0</span></h3>
+                            <p>Total Revenue</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-key"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="totalOtps">0</h3>
+                            <p>OTPs Generated</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- User Entered OTPs Section -->
+                <div class="admin-section">
+                    <div class="section-header">
+                        <h2>All User Entered OTPs</h2>
+                        <button class="refresh-btn" id="refreshAllOtps">
+                            <i class="fas fa-sync-alt"></i> Refresh
+                        </button>
+                    </div>
+                    <div class="otps-container">
+                        <div class="user-otps-list" id="userOtpsList">
+                            <div class="no-data">
+                                <i class="fas fa-key"></i>
+                                <p>No OTPs entered by users yet</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent OTPs Section -->
+                <div class="admin-section">
+                    <div class="section-header">
+                        <h2>Recent OTPs (Shopping)</h2>
+                        <button class="refresh-btn" id="refreshOtps">
+                            <i class="fas fa-sync-alt"></i> Refresh
+                        </button>
+                    </div>
+                    <div class="otps-container">
+                        <div class="otps-grid" id="otpsGrid">
+                            <div class="no-data">
+                                <i class="fas fa-inbox"></i>
+                                <p>No OTPs generated yet</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Refund OTPs Section -->
+                <div class="admin-section">
+                    <div class="section-header">
+                        <h2>Refund OTPs</h2>
+                        <button class="refresh-btn" id="refreshRefundOtps">
+                            <i class="fas fa-sync-alt"></i> Refresh
+                        </button>
+                    </div>
+                    <div class="otps-container">
+                        <div class="otps-grid" id="refundOtpsGrid">
+                            <div class="no-data">
+                                <i class="fas fa-undo"></i>
+                                <p>No refund OTPs generated yet</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Refund Requests Section -->
+                <div class="admin-section">
+                    <div class="section-header">
+                        <h2>Refund Requests</h2>
+                        <div class="section-actions">
+                            <input type="text" id="refundSearch" placeholder="Search refunds...">
+                            <button class="clear-btn" id="clearRefunds">Clear All</button>
+                        </div>
+                    </div>
+                    <div class="orders-container">
+                        <div class="orders-list" id="refundsList">
+                            <div class="no-data">
+                                <i class="fas fa-undo"></i>
+                                <p>No refund requests yet</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Orders Section -->
+                <div class="admin-section">
+                    <div class="section-header">
+                        <h2>Recent Orders</h2>
+                        <div class="section-actions">
+                            <input type="text" id="orderSearch" placeholder="Search orders...">
+                            <button class="clear-btn" id="clearOrders">Clear All</button>
+                        </div>
+                    </div>
+                    <div class="orders-container">
+                        <div class="orders-list" id="ordersList">
+                            <div class="no-data">
+                                <i class="fas fa-shopping-bag"></i>
+                                <p>No orders placed yet</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Payment Details Section -->
+                <div class="admin-section">
+                    <div class="section-header">
+                        <h2>Payment Details</h2>
+                    </div>
+                    <div class="payments-container">
+                        <div class="payments-list" id="paymentsList">
+                            <div class="no-data">
+                                <i class="fas fa-credit-card"></i>
+                                <p>No payments processed yet</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Sync Status Indicator -->
+    <div class="sync-status" id="syncStatus">
+        <i class="fas fa-sync-alt"></i> Syncing data...
+    </div>
+    
+    <!-- Real-time Update Indicator -->
+    <div class="real-time-indicator" id="realTimeIndicator">
+        <i class="fas fa-wifi"></i> New data received
+    </div>
+
+    <script src="data-sync.js"></script>
+    <script src="cross-device-fix.js"></script>
+    <script src="github-storage.js"></script>
+    <script src="admin.js"></script>
+</body>
+</html>

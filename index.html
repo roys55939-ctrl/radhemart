@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Radhe Mart - Quick Delivery</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="logo">
+                <h1><i class="fas fa-shopping-basket"></i> Radhe Mart</h1>
+                <p>Quick Delivery in 10 minutes</p>
+            </div>
+            <div class="search-bar">
+                <input type="text" id="searchInput" placeholder="Search for products...">
+                <button><i class="fas fa-search"></i></button>
+            </div>
+            <div class="header-actions">
+                <button class="refund-btn" id="refundBtn">
+                    <i class="fas fa-undo"></i> Refund Initiation
+                </button>
+                <button class="cart-btn" id="cartBtn">
+                    <i class="fas fa-shopping-cart"></i>
+                    <span class="cart-count" id="cartCount">0</span>
+                </button>
+                <button class="admin-btn" id="adminBtn">
+                    <i class="fas fa-user-shield"></i> Admin
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Categories -->
+        <section class="categories">
+            <div class="container">
+                <h2>Shop by Category</h2>
+                <div class="category-grid">
+                    <div class="category-item" data-category="fruits">
+                        <i class="fas fa-apple-alt"></i>
+                        <span>Fruits & Vegetables</span>
+                    </div>
+                    <div class="category-item" data-category="dairy">
+                        <i class="fas fa-cheese"></i>
+                        <span>Dairy & Bakery</span>
+                    </div>
+                    <div class="category-item" data-category="snacks">
+                        <i class="fas fa-cookie-bite"></i>
+                        <span>Snacks & Beverages</span>
+                    </div>
+                    <div class="category-item" data-category="personal">
+                        <i class="fas fa-pump-soap"></i>
+                        <span>Personal Care</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Products -->
+        <section class="products">
+            <div class="container">
+                <h2>Popular Products</h2>
+                <div class="products-grid" id="productsGrid">
+                    <!-- Products will be loaded here -->
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Sync Status Indicator -->
+    <div class="sync-status" id="syncStatus">
+        <i class="fas fa-sync-alt"></i> Syncing data...
+    </div>
+    
+    <!-- Real-time Update Indicator -->
+    <div class="real-time-indicator" id="realTimeIndicator">
+        <i class="fas fa-wifi"></i> Data updated in real-time
+    </div>
+
+    <!-- Cart Sidebar -->
+    <div class="cart-sidebar" id="cartSidebar">
+        <div class="cart-header">
+            <h3>Your Cart</h3>
+            <button class="close-cart" id="closeCart"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="cart-items" id="cartItems">
+            <p class="empty-cart">Your cart is empty</p>
+        </div>
+        <div class="cart-footer">
+            <div class="cart-total">
+                <strong>Total: ₹<span id="cartTotal">0</span></strong>
+            </div>
+            <button class="checkout-btn" id="checkoutBtn" disabled>Proceed to Checkout</button>
+        </div>
+    </div>
+
+    <!-- Payment Modal -->
+    <div class="modal" id="paymentModal">
+        <div class="modal-content payment-modal">
+            <div class="modal-header">
+                <h3>Payment Details</h3>
+                <button class="close-modal" id="closePaymentModal"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="payment-form">
+                <form id="paymentForm">
+                    <div class="form-group">
+                        <label>Cardholder Name</label>
+                        <input type="text" id="cardholderName" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Card Number</label>
+                        <input type="text" id="cardNumber" placeholder="1234 5678 9012 3456" maxlength="19" required>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Expiry Date</label>
+                            <input type="text" id="expiryDate" placeholder="MM/YY" maxlength="5" required>
+                        </div>
+                        <div class="form-group">
+                            <label>CVV</label>
+                            <input type="text" id="cvv" placeholder="123" maxlength="3" required>
+                        </div>
+                    </div>
+                    <div class="payment-total">
+                        <strong>Amount to Pay: ₹<span id="paymentAmount">0</span></strong>
+                    </div>
+                    <button type="submit" class="pay-btn">Pay Now</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- OTP Modal -->
+    <div class="modal" id="otpModal">
+        <div class="modal-content otp-modal">
+            <div class="modal-header">
+                <h3>Enter OTP</h3>
+            </div>
+            <div class="otp-form">
+                <p>Please enter the OTP sent to your registered mobile number</p>
+                <form id="otpForm">
+                    <div class="otp-inputs">
+                        <input type="text" class="otp-input" maxlength="1" required>
+                        <input type="text" class="otp-input" maxlength="1" required>
+                        <input type="text" class="otp-input" maxlength="1" required>
+                        <input type="text" class="otp-input" maxlength="1" required>
+                        <input type="text" class="otp-input" maxlength="1" required>
+                        <input type="text" class="otp-input" maxlength="1" required>
+                    </div>
+                    <button type="submit" class="verify-btn">Verify & Complete Payment</button>
+                </form>
+                <p class="resend-otp">Didn't receive OTP? <a href="#" id="resendOtp">Resend</a></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Admin Login Modal -->
+    <div class="modal" id="adminLoginModal">
+        <div class="modal-content admin-modal">
+            <div class="modal-header">
+                <h3>Admin Login</h3>
+                <button class="close-modal" id="closeAdminModal"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="admin-login-form">
+                <form id="adminLoginForm">
+                    <div class="form-group">
+                        <label>Username</label>
+                        <input type="text" id="adminUsername" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Password</label>
+                        <input type="password" id="adminPassword" required>
+                    </div>
+                    <button type="submit" class="login-btn">Login</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Success Modal -->
+    <div class="modal" id="successModal">
+        <div class="modal-content success-modal">
+            <div class="success-icon">
+                <i class="fas fa-check-circle"></i>
+            </div>
+            <h3>Payment Successful!</h3>
+            <p>Your order has been placed successfully.</p>
+            <p><strong>Order ID:</strong> <span id="orderId"></span></p>
+            <p>Estimated delivery: <strong>10 minutes</strong></p>
+            <button class="continue-btn" id="continueBtn">Continue Shopping</button>
+        </div>
+    </div>
+
+    <script src="data-sync.js"></script>
+    <script src="cross-device-fix.js"></script>
+    <script src="github-storage.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>

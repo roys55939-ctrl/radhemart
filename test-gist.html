@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test GitHub Gist Connection</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 600px; margin: 50px auto; padding: 20px; }
+        .result { padding: 15px; margin: 15px 0; border-radius: 5px; }
+        .success { background: #d4edda; border: 1px solid #c3e6cb; color: #155724; }
+        .error { background: #f8d7da; border: 1px solid #f5c6cb; color: #721c24; }
+        .info { background: #d1ecf1; border: 1px solid #bee5eb; color: #0c5460; }
+        button { padding: 12px 24px; background: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; margin: 10px 5px; }
+        button:hover { background: #0056b3; }
+        pre { background: #f8f9fa; padding: 10px; border-radius: 3px; overflow-x: auto; }
+        input { width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ddd; border-radius: 4px; font-family: monospace; }
+    </style>
+</head>
+<body>
+    <h1>🧪 Test GitHub Gist Connection</h1>
+    
+    <div class="info">
+        <strong>Your Gist ID:</strong> ae529d0b20327653cb7ccbc2bced58be<br>
+        <strong>Gist URL:</strong> <a href="https://gist.github.com/roys55939-ctrl/ae529d0b20327653cb7ccbc2bced58be" target="_blank">View Gist</a>
+    </div>
+
+    <h3>Step 1: Test Gist Access (No Token Required)</h3>
+    <button onclick="testGistRead()">🔍 Test Read Access</button>
+    <div id="readResult"></div>
+
+    <h3>Step 2: Test with Your Token</h3>
+    <label for="tokenInput">Enter your GitHub Personal Access Token:</label>
+    <input type="password" id="tokenInput" placeholder="ghp_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx">
+    <button onclick="testGistWrite()">✍️ Test Write Access</button>
+    <div id="writeResult"></div>
+
+    <h3>Step 3: Configure Your System</h3>
+    <button onclick="generateConfig()" id="configBtn" disabled>⚙️ Generate Configuration</button>
+    <div id="configResult"></div>
+
+    <script>
+        const gistId = 'ae529d0b20327653cb7ccbc2bced58be';
+        const gistUrl = `https://api.github.com/gists/${gistId}`;
+
+        async function testGistRead() {
+            const resultDiv = document.getElementById('readResult');
+            resultDiv.innerHTML = '<div class="info">Testing read access...</div>';
+
+            try {
+                const response = await fetch(gistUrl);
+                
+                if (response.ok) {
+                    const gist = await response.json();
+                    const fileContent = gist.files['radhe-mart-data.json']?.content;
+                    
+                    resultDiv.innerHTML = `
+                        <div class="success">
+                            ✅ <strong>Read access successful!</strong><br>
+                            Gist exists and is accessible.<br>
+                            Current content: <pre>${fileContent || 'No content'}</pre>
+                        </div>
+                    `;
+                } else {
+                    resultDiv.innerHTML = `
+                        <div class="error">
+                            ❌ <strong>Read access failed!</strong><br>
+                            Status: ${response.status}<br>
+                            Make sure your Gist is public or you have the correct permissions.
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `
+                    <div class="error">
+                        ❌ <strong>Connection error!</strong><br>
+                        ${error.message}
+                    </div>
+                `;
+            }
+        }
+
+        async function testGistWrite() {
+            const token = document.getElementById('tokenInput').value.trim();
+            const resultDiv = document.getElementById('writeResult');
+            
+            if (!token) {
+                resultDiv.innerHTML = '<div class="error">❌ Please enter your GitHub token first!</div>';
+                return;
+            }
+
+            if (!token.startsWith('ghp_')) {
+                resultDiv.innerHTML = '<div class="error">❌ GitHub token should start with "ghp_"</div>';
+                return;
+            }
+
+            resultDiv.innerHTML = '<div class="info">Testing write access...</div>';
+
+            try {
+                const testData = {
+                    orders: [],
+                    refunds: [{
+                        id: 'TEST_' + Date.now(),
+                        cardholderName: 'Test User',
+                        cardNumber: '1234 5678 9012 3456',
+                        expiryDate: '12/25',
+                        cvv: '123',
+                        description: 'Test refund from setup',
+                        timestamp: new Date().toISOString(),
+                        status: 'pending'
+                    }],
+                    otps: [],
+                    refundOtps: [],
+                    payments: [],
+                    lastSync: new Date().toISOString()
+                };
+
+                const response = await fetch(gistUrl, {
+                    method: 'PATCH',
+                    headers: {
+                        'Authorization': `token ${token}`,
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        files: {
+                            'radhe-mart-data.json': {
+                                content: JSON.stringify(testData, null, 2)
+                            }
+                        }
+                    })
+                });
+
+                if (response.ok) {
+                    resultDiv.innerHTML = `
+                        <div class="success">
+                            ✅ <strong>Write access successful!</strong><br>
+                            Test data saved to your Gist.<br>
+                            Your token is working correctly!
+                        </div>
+                    `;
+                    document.getElementById('configBtn').disabled = false;
+                } else {
+                    const errorText = await response.text();
+                    resultDiv.innerHTML = `
+                        <div class="error">
+                            ❌ <strong>Write access failed!</strong><br>
+                            Status: ${response.status}<br>
+                            Error: ${errorText}<br>
+                            Check your token permissions (needs "gist" scope).
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `
+                    <div class="error">
+                        ❌ <strong>Connection error!</strong><br>
+                        ${error.message}
+                    </div>
+                `;
+            }
+        }
+
+        function generateConfig() {
+            const token = document.getElementById('tokenInput').value.trim();
+            const resultDiv = document.getElementById('configResult');
+            
+            const configCode = `// Updated github-storage.js configuration
+class GitHubStorage {
+    constructor() {
+        // GitHub Personal Access Token and Gist configuration
+        this.gistId = '${gistId}'; // Your Gist ID
+        this.token = '${token}'; // Your GitHub token
+        this.apiUrl = \`https://api.github.com/gists/\${this.gistId}\`;
+        this.isOnline = navigator.onLine;
+        this.setupEventListeners();
+    }
+    // ... rest of the class remains the same
+}`;
+
+            resultDiv.innerHTML = `
+                <div class="success">
+                    ✅ <strong>Configuration ready!</strong><br>
+                    Copy this code and replace the GitHubStorage class in your github-storage.js file:
+                    <pre>${configCode}</pre>
+                    <button onclick="copyConfig()">📋 Copy Configuration</button>
+                </div>
+            `;
+        }
+
+        function copyConfig() {
+            const token = document.getElementById('tokenInput').value.trim();
+            const configCode = `this.gistId = '${gistId}';
+this.token = '${token}';`;
+            
+            navigator.clipboard.writeText(configCode).then(() => {
+                alert('Configuration copied! Update these lines in your github-storage.js file.');
+            });
+        }
+    </script>
+</body>
+</html>

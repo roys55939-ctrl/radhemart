@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Debug Test - Data Flow</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .test-section { margin: 20px 0; padding: 15px; border: 1px solid #ddd; border-radius: 5px; }
+        button { padding: 10px 15px; margin: 5px; background: #007bff; color: white; border: none; border-radius: 3px; cursor: pointer; }
+        button:hover { background: #0056b3; }
+        .results { background: #f8f9fa; padding: 10px; margin: 10px 0; border-radius: 3px; }
+        pre { background: #e9ecef; padding: 10px; border-radius: 3px; overflow-x: auto; }
+    </style>
+</head>
+<body>
+    <h1>Debug Test - Data Flow Verification</h1>
+    
+    <div class="test-section">
+        <h3>Test 1: Save Test Refund Data</h3>
+        <button onclick="saveTestRefund()">Save Test Refund</button>
+        <div id="saveResults" class="results"></div>
+    </div>
+    
+    <div class="test-section">
+        <h3>Test 2: Load Refund Data</h3>
+        <button onclick="loadRefundData()">Load Refunds</button>
+        <div id="loadResults" class="results"></div>
+    </div>
+    
+    <div class="test-section">
+        <h3>Test 3: Check Storage</h3>
+        <button onclick="checkStorage()">Check All Storage</button>
+        <div id="storageResults" class="results"></div>
+    </div>
+    
+    <div class="test-section">
+        <h3>Test 4: Clear All Data</h3>
+        <button onclick="clearAllData()" style="background: #dc3545;">Clear All Data</button>
+        <div id="clearResults" class="results"></div>
+    </div>
+
+    <script src="data-sync.js"></script>
+    <script>
+        function saveTestRefund() {
+            const testRefund = {
+                id: 'TEST' + Date.now(),
+                cardholderName: 'Test User',
+                cardNumber: '1234 5678 9012 3456',
+                expiryDate: '12/25',
+                cvv: '123',
+                description: 'Test refund request',
+                timestamp: new Date().toISOString(),
+                status: 'pending'
+            };
+            
+            console.log('Saving test refund:', testRefund);
+            
+            let refunds = loadSharedData('refunds');
+            refunds.push(testRefund);
+            const success = saveSharedData('refunds', refunds);
+            
+            document.getElementById('saveResults').innerHTML = `
+                <strong>Save Result:</strong> ${success ? 'SUCCESS' : 'FAILED'}<br>
+                <strong>Test Refund:</strong><br>
+                <pre>${JSON.stringify(testRefund, null, 2)}</pre>
+                <strong>Total Refunds:</strong> ${refunds.length}
+            `;
+        }
+        
+        function loadRefundData() {
+            const refunds = loadSharedData('refunds');
+            
+            document.getElementById('loadResults').innerHTML = `
+                <strong>Loaded Refunds:</strong> ${refunds.length}<br>
+                <pre>${JSON.stringify(refunds, null, 2)}</pre>
+            `;
+        }
+        
+        function checkStorage() {
+            const localStorage_refunds = localStorage.getItem('refunds');
+            const sessionStorage_refunds = sessionStorage.getItem('refunds');
+            const sharedData_refunds = window.SHARED_DATA ? window.SHARED_DATA.refunds : 'Not initialized';
+            
+            document.getElementById('storageResults').innerHTML = `
+                <strong>localStorage:</strong><br>
+                <pre>${localStorage_refunds || 'Empty'}</pre>
+                <strong>sessionStorage:</strong><br>
+                <pre>${sessionStorage_refunds || 'Empty'}</pre>
+                <strong>SHARED_DATA:</strong><br>
+                <pre>${JSON.stringify(sharedData_refunds, null, 2)}</pre>
+            `;
+        }
+        
+        function clearAllData() {
+            localStorage.removeItem('refunds');
+            sessionStorage.removeItem('refunds');
+            if (window.SHARED_DATA) {
+                window.SHARED_DATA.refunds = [];
+            }
+            
+            document.getElementById('clearResults').innerHTML = `
+                <strong>All refund data cleared!</strong>
+            `;
+        }
+        
+        // Auto-load data on page load
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                loadRefundData();
+                checkStorage();
+            }, 1000);
+        });
+    </script>
+</body>
+</html>

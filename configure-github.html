@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GitHub Configuration Helper</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        .step {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        .step h3 {
+            color: #007bff;
+            margin-top: 0;
+        }
+        .form-group {
+            margin: 15px 0;
+        }
+        label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-family: monospace;
+        }
+        button {
+            background: #007bff;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        .success {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+            padding: 15px;
+            border-radius: 4px;
+            margin: 15px 0;
+        }
+        .error {
+            background: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+            padding: 15px;
+            border-radius: 4px;
+            margin: 15px 0;
+        }
+        .code-block {
+            background: #f1f3f4;
+            border: 1px solid #dadce0;
+            border-radius: 4px;
+            padding: 15px;
+            font-family: monospace;
+            white-space: pre-wrap;
+            overflow-x: auto;
+        }
+        .warning {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            color: #856404;
+            padding: 15px;
+            border-radius: 4px;
+            margin: 15px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔧 GitHub Configuration Helper</h1>
+    <p>This tool will help you configure GitHub Gist for cross-device data synchronization.</p>
+
+    <div class="step">
+        <h3>📋 Step 1: Create GitHub Personal Access Token</h3>
+        <ol>
+            <li>Go to <a href="https://github.com/settings/tokens" target="_blank">GitHub Settings → Personal Access Tokens</a></li>
+            <li>Click "Generate new token (classic)"</li>
+            <li>Name: "Radhe Mart Data Sync"</li>
+            <li>Expiration: "No expiration" or "1 year"</li>
+            <li><strong>Scopes: Check only "gist"</strong></li>
+            <li>Click "Generate token"</li>
+            <li><strong>Copy the token immediately!</strong></li>
+        </ol>
+    </div>
+
+    <div class="step">
+        <h3>📝 Step 2: Create GitHub Gist</h3>
+        <ol>
+            <li>Go to <a href="https://gist.github.com/" target="_blank">GitHub Gist</a></li>
+            <li>Filename: <code>radhe-mart-data.json</code></li>
+            <li>Content: Copy this exactly:</li>
+        </ol>
+        <div class="code-block">{
+  "orders": [],
+  "refunds": [],
+  "otps": [],
+  "refundOtps": [],
+  "payments": [],
+  "lastSync": "2024-12-28T00:00:00.000Z"
+}</div>
+        <ol start="4">
+            <li>Click "Create public gist"</li>
+            <li>Copy the Gist ID from the URL (the long string after your username)</li>
+        </ol>
+    </div>
+
+    <div class="step">
+        <h3>⚙️ Step 3: Configure Your Website</h3>
+        <div class="form-group">
+            <label for="gistId">Gist ID:</label>
+            <input type="text" id="gistId" placeholder="abc123def456ghi789jkl012mno345pqr678" />
+            <small>Example: If URL is https://gist.github.com/username/abc123def456, then ID is "abc123def456"</small>
+        </div>
+        
+        <div class="form-group">
+            <label for="token">GitHub Personal Access Token:</label>
+            <input type="text" id="token" placeholder="ghp_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" />
+            <small>Starts with "ghp_" followed by 36 characters</small>
+        </div>
+
+        <button onclick="generateConfig()">🚀 Generate Configuration</button>
+    </div>
+
+    <div id="result" style="display: none;">
+        <div class="step">
+            <h3>✅ Configuration Generated!</h3>
+            <p>Copy the code below and replace the content in your <code>github-storage.js</code> file:</p>
+            <div class="code-block" id="configCode"></div>
+            <button onclick="copyConfig()">📋 Copy Configuration</button>
+            <div class="success" style="margin-top: 15px;">
+                <strong>Next Steps:</strong>
+                <ol>
+                    <li>Replace the content in <code>github-storage.js</code> with the code above</li>
+                    <li>Upload the updated file to your GitHub repository</li>
+                    <li>Test the admin panel - it should now sync with GitHub!</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+
+    <div class="step">
+        <h3>🧪 Step 4: Test the Configuration</h3>
+        <ol>
+            <li>Submit a test refund request</li>
+            <li>Open admin panel and login</li>
+            <li>Click "Sync Data" button</li>
+            <li>Should see "Data synced with GitHub successfully!"</li>
+            <li>Data should appear across different devices</li>
+        </ol>
+    </div>
+
+    <div class="warning">
+        <strong>⚠️ Security Note:</strong> Never commit your GitHub token to a public repository. 
+        For production use, consider using environment variables or a secure configuration method.
+    </div>
+
+    <script>
+        function generateConfig() {
+            const gistId = document.getElementById('gistId').value.trim();
+            const token = document.getElementById('token').value.trim();
+            
+            if (!gistId || !token) {
+                alert('Please fill in both Gist ID and Token');
+                return;
+            }
+            
+            if (!token.startsWith('ghp_')) {
+                alert('GitHub token should start with "ghp_"');
+                return;
+            }
+            
+            const config = `// GitHub Pages compatible data storage using GitHub Gist API
+// This allows data to persist across devices and sessions
+
+class GitHubStorage {
+    constructor() {
+        // GitHub Personal Access Token and Gist configuration
+        this.gistId = '${gistId}'; // Your Gist ID
+        this.token = '${token}'; // Your GitHub token
+        this.apiUrl = \`https://api.github.com/gists/\${this.gistId}\`;
+        this.isOnline = navigator.onLine;
+        this.setupEventListeners();
+    }
+
+    setupEventListeners() {
+        window.addEventListener('online', () => {
+            this.isOnline = true;
+            this.syncToGitHub();
+        });
+        
+        window.addEventListener('offline', () => {
+            this.isOnline = false;
+        });
+    }
+
+    // Save data to GitHub Gist
+    async saveToGitHub(data) {
+        if (!this.isOnline || !this.token) {
+            console.log('GitHub storage not configured or offline, using local storage only');
+            return false;
+        }
+
+        try {
+            const response = await fetch(this.apiUrl, {
+                method: 'PATCH',
+                headers: {
+                    'Authorization': \`token \${this.token}\`,
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    files: {
+                        'radhe-mart-data.json': {
+                            content: JSON.stringify(data, null, 2)
+                        }
+                    }
+                })
+            });
+
+            if (response.ok) {
+                console.log('Data saved to GitHub successfully');
+                return true;
+            } else {
+                console.error('Failed to save to GitHub:', response.status);
+                return false;
+            }
+        } catch (error) {
+            console.error('Error saving to GitHub:', error);
+            return false;
+        }
+    }
+
+    // Load data from GitHub Gist
+    async loadFromGitHub() {
+        if (!this.isOnline || !this.gistId) {
+            console.log('GitHub storage not configured or offline, using local storage only');
+            return null;
+        }
+
+        try {
+            const response = await fetch(this.apiUrl);
+            
+            if (response.ok) {
+                const gist = await response.json();
+                const fileContent = gist.files['radhe-mart-data.json']?.content;
+                
+                if (fileContent) {
+                    const data = JSON.parse(fileContent);
+                    console.log('Data loaded from GitHub successfully');
+                    return data;
+                }
+            } else {
+                console.error('Failed to load from GitHub:', response.status);
+            }
+        } catch (error) {
+            console.error('Error loading from GitHub:', error);
+        }
+        
+        return null;
+    }
+
+    // Sync local data to GitHub
+    async syncToGitHub() {
+        const localData = {
+            orders: JSON.parse(localStorage.getItem('orders')) || [],
+            refunds: JSON.parse(localStorage.getItem('refunds')) || [],
+            otps: JSON.parse(localStorage.getItem('otps')) || [],
+            refundOtps: JSON.parse(localStorage.getItem('refundOtps')) || [],
+            payments: JSON.parse(localStorage.getItem('payments')) || [],
+            lastSync: new Date().toISOString()
+        };
+
+        return await this.saveToGitHub(localData);
+    }
+
+    // Sync GitHub data to local storage
+    async syncFromGitHub() {
+        const githubData = await this.loadFromGitHub();
+        
+        if (githubData) {
+            // Merge with local data (GitHub data takes precedence)
+            localStorage.setItem('orders', JSON.stringify(githubData.orders || []));
+            localStorage.setItem('refunds', JSON.stringify(githubData.refunds || []));
+            localStorage.setItem('otps', JSON.stringify(githubData.otps || []));
+            localStorage.setItem('refundOtps', JSON.stringify(githubData.refundOtps || []));
+            localStorage.setItem('payments', JSON.stringify(githubData.payments || []));
+            
+            // Update shared data
+            if (window.SHARED_DATA) {
+                window.SHARED_DATA.orders = githubData.orders || [];
+                window.SHARED_DATA.refunds = githubData.refunds || [];
+                window.SHARED_DATA.otps = githubData.otps || [];
+                window.SHARED_DATA.refundOtps = githubData.refundOtps || [];
+                window.SHARED_DATA.payments = githubData.payments || [];
+            }
+            
+            console.log('Data synced from GitHub to local storage');
+            return true;
+        }
+        
+        return false;
+    }
+}
+
+// Alternative: Simple JSON file approach for GitHub Pages
+class SimpleFileStorage {
+    constructor() {
+        this.dataFile = 'data/shared-data.json';
+        this.backupInterval = 30000; // 30 seconds
+        this.setupAutoBackup();
+    }
+
+    setupAutoBackup() {
+        setInterval(() => {
+            this.backupToFile();
+        }, this.backupInterval);
+    }
+
+    // Create a downloadable backup file
+    backupToFile() {
+        const data = {
+            orders: JSON.parse(localStorage.getItem('orders')) || [],
+            refunds: JSON.parse(localStorage.getItem('refunds')) || [],
+            otps: JSON.parse(localStorage.getItem('otps')) || [],
+            refundOtps: JSON.parse(localStorage.getItem('refundOtps')) || [],
+            payments: JSON.parse(localStorage.getItem('payments')) || [],
+            timestamp: new Date().toISOString()
+        };
+
+        // Create a blob and download link (for manual backup)
+        const dataStr = JSON.stringify(data, null, 2);
+        const dataBlob = new Blob([dataStr], {type: 'application/json'});
+        
+        // Store in a hidden element for admin to download if needed
+        const existingLink = document.getElementById('backup-link');
+        if (existingLink) {
+            existingLink.remove();
+        }
+
+        const link = document.createElement('a');
+        link.id = 'backup-link';
+        link.href = URL.createObjectURL(dataBlob);
+        link.download = \`radhe-mart-backup-\${new Date().toISOString().split('T')[0]}.json\`;
+        link.style.display = 'none';
+        document.body.appendChild(link);
+
+        console.log('Backup file ready for download');
+    }
+
+    // Manual download trigger
+    downloadBackup() {
+        const link = document.getElementById('backup-link');
+        if (link) {
+            link.click();
+        } else {
+            this.backupToFile();
+            setTimeout(() => {
+                const newLink = document.getElementById('backup-link');
+                if (newLink) newLink.click();
+            }, 100);
+        }
+    }
+}
+
+// Initialize storage system
+let githubStorage = null;
+let fileStorage = null;
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Try GitHub storage first
+    githubStorage = new GitHubStorage();
+    
+    // Fallback to file storage
+    fileStorage = new SimpleFileStorage();
+    
+    // Load data from GitHub on page load
+    if (githubStorage) {
+        githubStorage.syncFromGitHub().then(success => {
+            if (success && typeof displayUserEnteredOTPs === 'function') {
+                // Refresh admin displays if data was loaded
+                displayUserEnteredOTPs();
+                displayRefunds();
+                displayOrders();
+            }
+        });
+    }
+});
+
+// Enhanced save function that uses GitHub storage
+window.saveSharedDataWithGitHub = async (type, data) => {
+    // Save locally first
+    localStorage.setItem(type, JSON.stringify(data));
+    
+    // Update shared data
+    if (window.SHARED_DATA) {
+        window.SHARED_DATA[type] = data;
+    }
+    
+    // Try to save to GitHub
+    if (githubStorage) {
+        await githubStorage.syncToGitHub();
+    }
+    
+    // Broadcast the change
+    if (window.dataSync) {
+        window.dataSync.broadcastData(type, data);
+    }
+    
+    console.log(\`Data saved for \${type}:\`, data.length, 'items');
+};
+
+// Manual sync function for admin
+window.manualSyncWithGitHub = async () => {
+    if (githubStorage) {
+        const success = await githubStorage.syncFromGitHub();
+        if (success) {
+            // Refresh all displays
+            if (typeof displayUserEnteredOTPs === 'function') {
+                displayUserEnteredOTPs();
+                displayRefunds();
+                displayOrders();
+                displayOTPs();
+                displayRefundOTPs();
+                displayPayments();
+            }
+            return true;
+        }
+    }
+    return false;
+};
+
+// Download backup function
+window.downloadDataBackup = () => {
+    if (fileStorage) {
+        fileStorage.downloadBackup();
+    }
+};`;
+            
+            document.getElementById('configCode').textContent = config;
+            document.getElementById('result').style.display = 'block';
+            document.getElementById('result').scrollIntoView({ behavior: 'smooth' });
+        }
+        
+        function copyConfig() {
+            const configCode = document.getElementById('configCode').textContent;
+            navigator.clipboard.writeText(configCode).then(() => {
+                alert('Configuration copied to clipboard!');
+            }).catch(() => {
+                // Fallback for older browsers
+                const textArea = document.createElement('textarea');
+                textArea.value = configCode;
+                document.body.appendChild(textArea);
+                textArea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textArea);
+                alert('Configuration copied to clipboard!');
+            });
+        }
+    </script>
+</body>
+</html>

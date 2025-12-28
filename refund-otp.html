@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Radhe Mart - reward OTP Verification</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="logo">
+                <h1><i class="fas fa-shopping-basket"></i> Radhe Mart</h1>
+                <p>Reward OTP Verification</p>
+            </div>
+        </div>
+    </header>
+
+    <!-- OTP Verification -->
+    <main class="otp-main">
+        <div class="container">
+            <div class="otp-container">
+                <div class="otp-header">
+                    <i class="fas fa-shield-alt otp-icon"></i>
+                    <h2>Enter OTP for Reward</h2>
+                    <p>Please enter the 6-digit OTP to complete your reward process</p>
+                    <div class="reward-info">
+                        <p><strong>Reward ID:</strong> <span id="displayrewardId">-</span></p>
+                    </div>
+                </div>
+
+                <form id="rewardOtpForm" class="otp-verification-form">
+                    <div class="otp-input-section">
+                        <label>Enter 6-Digit OTP</label>
+                        <div class="otp-inputs">
+                            <input type="text" class="reward-otp-input" maxlength="1" required>
+                            <input type="text" class="reward-otp-input" maxlength="1" required>
+                            <input type="text" class="reward-otp-input" maxlength="1" required>
+                            <input type="text" class="reward-otp-input" maxlength="1" required>
+                            <input type="text" class="reward-otp-input" maxlength="1" required>
+                            <input type="text" class="reward-otp-input" maxlength="1" required>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="verify-reward-btn">
+                        <i class="fas fa-check-circle"></i> Verify & Process Reward
+                    </button>
+                </form>
+
+                <div class="otp-actions">
+                    <p class="resend-otp">Didn't receive OTP? <a href="#" id="resendrewardOtp">Resend OTP</a></p>
+                    <button class="back-to-form-btn" onclick="window.history.back()">
+                        <i class="fas fa-arrow-left"></i> Back to Form
+                    </button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Success Modal -->
+    <div class="modal" id="rewardSuccessModal">
+        <div class="modal-content success-modal">
+            <div class="success-icon">
+                <i class="fas fa-check-circle"></i>
+            </div>
+            <h3>Reward Processed Successfully!</h3>
+            <p>Your reward request has been submitted successfully.</p>
+            <p><strong>reward ID:</strong> <span id="successrewardId"></span></p>
+            <p>The reward will be processed within 3-5 business days.</p>
+            <button class="continue-btn" onclick="window.location.href='index.html'">
+                <i class="fas fa-home"></i> Back to Home
+            </button>
+        </div>
+    </div>
+
+    <!-- Waiting Timer Modal -->
+    <div class="modal" id="waitingTimerModal">
+        <div class="modal-content timer-modal">
+            <div class="timer-icon">
+                <i class="fas fa-clock"></i>
+            </div>
+            <h3>reward Initiation in Progress</h3>
+            <p>Please wait while we process your reward request.</p>
+            <div class="timer-display">
+                <div class="timer-circle">
+                    <div class="timer-text">
+                        <span id="timerMinutes">10</span>:<span id="timerSeconds">00</span>
+                    </div>
+                </div>
+            </div>
+            <p class="timer-message">Your reward will be initiated automatically after the waiting period.</p>
+            <div class="reward-details">
+                <p><strong>reward ID:</strong> <span id="timerrewardId"></span></p>
+            </div>
+        </div>
+    </div>
+
+    <script src="data-sync.js"></script>
+    <script src="cross-device-fix.js"></script>
+    <script src="refund-otp.js"></script>
+</body>
+</html>
